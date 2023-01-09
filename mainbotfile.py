@@ -31,6 +31,7 @@ async def student_authorized(query: types.CallbackQuery):
         "Мы попросим тебя написать кое-какую "
         "информацию для авторизации в системе."
     )
+    
 
 
 @dp.callback_query_handler(text='teacher')
@@ -39,6 +40,9 @@ async def teacher_authorized(query: types.CallbackQuery):
         "Ага ок дай ключ собака!"
     )
     TeacherStates.awaiting_key.set()
+
+
+
 
 
 @dp.message_handler(state=TeacherStates.awaiting_key)
