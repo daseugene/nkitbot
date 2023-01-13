@@ -1,9 +1,9 @@
 from database import Database
 
 db_manager = Database(
-    db_host='127.0.0.1',
+    db_host='localhost',
     db_name='nkitbot_db',
-    db_password='15386',
+    db_password='4336',
     db_port='5432',
     db_user='root'
 )

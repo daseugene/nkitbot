@@ -1,5 +1,5 @@
 from asyncpg.connection import Connection
-import asyncpg as apg
+import asyncpg 
 
 
 class Database:
@@ -19,7 +19,7 @@ class Database:
 
 
     async def _get_connection(self) -> Connection:
-        return await apg.create_pool(
+        return await asyncpg.create_pool(
             password=self.DB_PASSWORD,
             user=self.DB_USER,
             host=self.DB_HOST,
@@ -27,11 +27,12 @@ class Database:
             database=self.DB_NAME,
             max_inactive_connection_lifetime=600
         )
+      
 
     async def first_time_init(self):
-        conn = await self._get_connection()
-        await self._firt_init_user(conn)
-        await self._firt_init_teacher(conn)
+        conn = await self._get_connection()  #'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
+        #await self._firt_init_user(conn)
+       # await self._firt_init_teacher(conn)
         await conn.close()
 
     async def _firt_init_user(self, conn):

@@ -69,16 +69,15 @@ async def process_about_command(message: types.Message):
          "Следить за обновлениями можно по ссылке: "),
         reply_markup=keyboard.help_buttons)
 
-
-@dp.message_handler()
-async def after_autorization(message: types.Message):
-    await message.reply("Напиши номер своей группы, студент!")
+#@dp.message_handler()
+#async def after_autorization(message: types.Message):
+ #   await message.reply("Напиши номер своей группы, студент!")
 
 
 if __name__ == '__main__':
     print('Starting bot...')
-    print('Testing database connection...')
-    newfeature = asyncio.get_event_loop().run_until_complete(
+    newfeauture = asyncio.get_event_loop().run_until_complete(
         db_manager.first_time_init()
     )
+    print('Testing database connection...')
     executor.start_polling(dp, skip_updates=True)
