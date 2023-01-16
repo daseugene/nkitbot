@@ -37,7 +37,7 @@ async def student_authorized(query: types.CallbackQuery):
 @dp.callback_query_handler(text='teacher')
 async def teacher_authorized(query: types.CallbackQuery):
     await query.message.reply(
-        "Ага ок дай ключ собака!"
+        "Введите ключ авторизации!"
     )
     TeacherStates.awaiting_key.set()
 
@@ -52,12 +52,11 @@ async def admin_authorized(message: types.Message):
                                           message.text)
     if success:
         await message.reply(
-            "Заебок, авторизован."
+            "Авторизация прошла успешно"
         )
     else:
         await message.reply(
-            "Нет такого пароля"
-            "пососи жопу."
+            "Код недействителен"
         )
 
 

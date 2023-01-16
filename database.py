@@ -55,6 +55,22 @@ class Database:
         user_id: int,
         key: str
     ) -> bool:
+        """
+        INSERT INTO teachers (auth_code)
+        VALUES ('key')
+        
+        
+        
+        
+        
+        
+        
+        """,
+        
+        
+        
+        
+        
         """Проверяем и авторизуем учителя
 
         Args:
