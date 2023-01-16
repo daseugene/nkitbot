@@ -75,8 +75,15 @@ async def process_about_command(message: types.Message):
 
 if __name__ == '__main__':
     print('Starting bot...')
-    newfeauture = asyncio.get_event_loop().run_until_complete(
+ #   newfeauture = asyncio.get_event_loop().run_until_complete(
+  #      db_manager.first_time_init()
+   # )
+    
+    newfuture = asyncio.new_event_loop()
+    asyncio.set_event_loop(newfuture)
+    newfuture = asyncio.get_event_loop().run_until_complete(
         db_manager.first_time_init()
     )
+
     print('Testing database connection...')
     executor.start_polling(dp, skip_updates=True)
