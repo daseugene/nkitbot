@@ -11,3 +11,11 @@ class AuthStates(StatesGroup):
 
 class TeacherStates(StatesGroup):
     awaiting_key = State()
+
+
+class AdminStates(StatesGroup):
+    awaiting_key = State()
+    choosing_user_for_add = State()
+    choosing_user_for_delete = State()
+
+    

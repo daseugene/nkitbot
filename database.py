@@ -2,6 +2,8 @@ from asyncpg.connection import Connection
 import asyncpg 
 
 
+#from mainbotfile import user_id
+
 class Database:
     def __init__(
         self,
@@ -36,15 +38,17 @@ class Database:
         await conn.close()
 
     async def _firt_init_user(self, conn):
-        query = """CREATE TABLE IF NOT EXISTS TABLE_NAME (
-            id integer(15),
-            name char(30)
+        query = """CREATE TABLE IF NOT EXISTS students (
+            user_id char(15),
+            name char(30),
+            group char(5),
+            sensei_id char(15)
         );"""
         await conn.execute(query=query)
 
     async def _firt_init_teacher(self, conn):
-        query = """CREATE TABLE IF NOT EXISTS TABLE_NAME (
-            id integer(15),
+        query = """CREATE TABLE IF NOT EXISTS teachers (
+            user_id char(15),
             name char(30),
             auth_code char(10)
         );"""
@@ -55,31 +59,31 @@ class Database:
         user_id: int,
         key: str
     ) -> bool:
-       # '''
-      #  INSERT INTO teachers (auth_code)
-      #  VALUES ('key')
-        
-       # ''',
-        
-        
-        
-        
-        
-        """Проверяем и авторизуем учителя
+       '''
+        INSERT INTO teachers (auth_code)
+        VALUES ('key')
 
-        Args:
-            user_id (int): Telegram ID пользователя
-            key (str): Ключ-пароль
+        ''',
+        
+        
+        
+        
+        
+    #"""Проверяем и авторизуем учителя
 
-        Returns:
-            bool: True если пароль верный
+     #   Args:
+     #       user_id (int): Telegram ID пользователя
+      #      key (str): Ключ-пароль
 
-        Тут мы должны взять ключ, который передал юзер,
-        после чего мы ищем в базе данных запись с этим ключом
-        если запись найдена - вписываем в нее user_id
-        и обязательно удаляем из неё ключ.
-        """
-        pass
+     #   Returns:
+      #      bool: True если пароль верный
+
+     #   Тут мы должны взять ключ, который передал юзер,
+     #   после чего мы ищем в базе данных запись с этим ключом
+   #     если запись найдена - вписываем в нее user_id
+     #   и обязательно удаляем из неё ключ.
+    #    """
+    pass
 
     async def init_student(self) -> bool:
         pass
@@ -89,6 +93,6 @@ class Database:
 
     async def get_users_list(self) -> list:
         conn = await self._get_connection()
-        result = await conn.fetch('SELECT * FROM "students";')
+        result = await conn.fetch('SELECT * FROM "teachers";')
         await conn.close()
         return result
