@@ -1,8 +1,9 @@
 from asyncpg.connection import Connection
-import asyncpg 
+import asyncpg
 from aiogram.dispatcher import Dispatcher
 
-#from mainbotfile import student_authorized
+# from mainbotfile import student_authorized
+
 
 class Database:
     def __init__(
@@ -19,7 +20,6 @@ class Database:
         self.DB_PORT = db_port
         self.DB_NAME = db_name
 
-
     async def _get_connection(self) -> Connection:
         return await asyncpg.create_pool(
             password=self.DB_PASSWORD,
@@ -29,10 +29,10 @@ class Database:
             database=self.DB_NAME,
             max_inactive_connection_lifetime=600
         )
-      
 
     async def first_time_init(self):
-        conn = await self._get_connection()  #'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
+        # 'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
+        conn = await self._get_connection()
         await self._firt_init_user(conn)
         await self._firt_init_teacher(conn)
         await conn.close()
@@ -40,7 +40,7 @@ class Database:
     async def _firt_init_user(self, conn):
         query = """CREATE TABLE IF NOT EXISTS students (
             user_id char(15),
-            name varchar(30)
+            group_no varchar(30)
         );"""
         await conn.execute(query=query)
 
@@ -60,20 +60,14 @@ class Database:
         '''
         INSERT INTO teachers (auth_code)
         VALUES ('key')
-        ''', #user_id(int): teacher_id, key(str): auth_code
-      
-      
-      
-      
-      
+        ''',  # user_id(int): teacher_id, key(str): auth_code
+
       #  async def check_auth_teacher(conn, table, field, value, key):
        #     query = f"SELECT auth_code FROM teachers WHERE auth_code = 'key', key"
         #
-         #   row = await conn.fetchrow(query)
+        #   row = await conn.fetchrow(query)
 
-
-        
-    #"""Проверяем и авторизуем учителя
+    # """Проверяем и авторизуем учителя
 
      #   Args:
      #       user_id (int): Telegram ID пользователя
@@ -87,19 +81,18 @@ class Database:
    #     если запись найдена - вписываем в нее user_id
      #   и обязательно удаляем из неё ключ.
     #    """
-    #pass
+    # pass
 
-    async def init_student(self) -> bool:
-        ''' INSERT INTO students (user_id, name) 
-        VALUES ('query.from_user.id', 'query.data' )
-        
-        '''
-       
-        
-        
-        
-        
-      
+    async def init_student(
+        self,
+        group_no: str,
+        user_id: int
+    ) -> bool:
+        query = ("INSERT INTO students (user_id, group_no)"
+                 f" VALUES ('{user_id}', '{group_no}' )")
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
 
     async def init_admin(self) -> bool:
         pass

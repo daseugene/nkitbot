@@ -9,26 +9,14 @@ db_manager = Database(
 )
 
 
-class UserService:
+class StudentService:
     @staticmethod
-    async def init_user(
-        group: str,
+    async def init_student(
+        group_no: str,
         user_id: int,
-        key: str = None
     ) -> bool:
-        if not group:
-            raise AttributeError('group us required argument')
-        if not user_id:
-            raise AttributeError('user_id us required argument')
-        if group in ['teacher', 'admin'] and not key:
-            raise AttributeError('Key is required for teacher and admin')
+        await db_manager.init_student(group_no, user_id)
 
-        if group == 'teacher':
-            return await db_manager.init_teacher(
-                user_id,
-                key
-            )
-        if group == 'admin':
-            return await db_manager.init_admin()
-        if group == 'student':
-            return await db_manager.init_student()
+
+class TeacherService:
+    pass

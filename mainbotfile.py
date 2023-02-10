@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 import asyncio
 
-from services import UserService, db_manager
+from services import UserService, db_manager, StudentService
 import keyboard
 from utils import AuthStates, TeacherStates, AdminStates, StudentStates
 
@@ -45,7 +45,7 @@ async def student_authorized(query: types.CallbackQuery):
 
 @dp.message_handler(state='student_authorization')
 async def studentis(message: types.Message):
-    await UserService.init_user(message, message.from_user.id)
+    await StudentService.init_student(message, message.from_user.id)
     
 
 
