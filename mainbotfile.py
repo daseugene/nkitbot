@@ -7,12 +7,13 @@ import asyncio
 
 from services import UserService, db_manager
 import keyboard
-from utils import AuthStates, TeacherStates, AdminStates
+from utils import AuthStates, TeacherStates, AdminStates, StudentStates
 
 
 bot = Bot(token='5674127673:AAGiSaquLQYIfptAxU3fdrX2mxAOxIDtJ64')
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
+
 
 
 
@@ -35,9 +36,16 @@ async def student_authorized(query: types.CallbackQuery):
         "информацию для авторизации в системе."
     )
     await query.message.delete()
-    student_id = query.from_user.id
-    student_name = query.from_user.full_name
-    print("Выбрал(а) роль студента: ", student_name, "ID: " ,student_id)
+    #await db_manager.init_student(student_tg_id, student_name_tg)
+    student_tg_id = query.from_user.id
+    student_name_tg = query.from_user.full_name
+    print("Выбрал(а) роль студента: ", student_name_tg, "ID: " ,student_tg_id)
+    StudentStates.student_authorization.set()
+
+
+@dp.message_handler(state='student_authorization')
+async def studentis(message: types.Message):
+    await UserService.init_user(message, message.from_user.id)
     
 
 
@@ -48,6 +56,7 @@ async def teacher_authorized(query: types.CallbackQuery):
     )
     teacher_id = query.from_user.id
     teacher_name = query.from_user.full_name
+    key = query.from_user
 
     print("Выбрал(а) роль преподавателя: ", teacher_name, "ID: " ,teacher_id)
     TeacherStates.awaiting_key.set()
@@ -70,7 +79,8 @@ async def teacher_authorized(message: types.Message):
         await message.reply(
             "Код недействителен"
         )
-
+    teacher_id = message.from_user.id
+    teacher_name = message.from_user.full_name
 
 
 @dp.message_handler(state=AdminStates.awaiting_key)

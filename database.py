@@ -1,8 +1,8 @@
 from asyncpg.connection import Connection
 import asyncpg 
+from aiogram.dispatcher import Dispatcher
 
-
-#from mainbotfile import user_id
+#from mainbotfile import student_authorized
 
 class Database:
     def __init__(
@@ -33,16 +33,14 @@ class Database:
 
     async def first_time_init(self):
         conn = await self._get_connection()  #'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
-        #await self._firt_init_user(conn)
-       # await self._firt_init_teacher(conn)
+        await self._firt_init_user(conn)
+        await self._firt_init_teacher(conn)
         await conn.close()
 
     async def _firt_init_user(self, conn):
         query = """CREATE TABLE IF NOT EXISTS students (
             user_id char(15),
-            name char(30),
-            group char(5),
-            sensei_id char(15)
+            name varchar(30)
         );"""
         await conn.execute(query=query)
 
@@ -59,15 +57,21 @@ class Database:
         user_id: int,
         key: str
     ) -> bool:
-       '''
+        '''
         INSERT INTO teachers (auth_code)
         VALUES ('key')
+        ''', #user_id(int): teacher_id, key(str): auth_code
+      
+      
+      
+      
+      
+      #  async def check_auth_teacher(conn, table, field, value, key):
+       #     query = f"SELECT auth_code FROM teachers WHERE auth_code = 'key', key"
+        #
+         #   row = await conn.fetchrow(query)
 
-        ''',
-        
-        
-        
-        
+
         
     #"""Проверяем и авторизуем учителя
 
@@ -83,10 +87,19 @@ class Database:
    #     если запись найдена - вписываем в нее user_id
      #   и обязательно удаляем из неё ключ.
     #    """
-    pass
+    #pass
 
     async def init_student(self) -> bool:
-        pass
+        ''' INSERT INTO students (user_id, name) 
+        VALUES ('query.from_user.id', 'query.data' )
+        
+        '''
+       
+        
+        
+        
+        
+      
 
     async def init_admin(self) -> bool:
         pass
