@@ -12,11 +12,17 @@ db_manager = Database(
 class StudentService:
     @staticmethod
     async def init_student(
-        name: str,
+        groups: str,
         user_id: int,
     ) -> bool:
-        await db_manager.init_student(name, user_id)
+        await db_manager.init_student(groups, user_id)
 
 
 class TeacherService:
-    pass
+    @staticmethod
+    async def init_teacher(
+        name: str,
+        user_id: int,
+        auth_code: str,
+    ) -> bool:
+        await db_manager.init_teacher

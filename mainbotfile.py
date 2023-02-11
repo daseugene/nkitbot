@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 import asyncio
 
-from services import StudentService, db_manager
+from services import StudentService, db_manager, TeacherService
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
 
@@ -26,53 +26,56 @@ async def command_start(message: types.Message):
 
 @dp.callback_query_handler(text='student')
 async def student_authorized(query: types.CallbackQuery):
-    
     await query.message.answer(
-        "Хорошо. Как тебя зовут? \n "
-        "Мы попросим тебя написать кое-какую "
-        "информацию для авторизации в системе."
+        "Напиши номер своей группы!"
     )
-    
-    await query.message.delete()
-    # await db_manager.init_student(student_tg_id, student_name_tg)
-    student_tg_id = query.from_user.id
-    student_name_tg = query.from_user.full_name
-    print("Выбрал(а) роль студента: ", student_name_tg, "ID: ", student_tg_id)
+    # await StudentService.init_student(query.data, query.from_user.id)
+    # await query.message.delete()
+    # student_tg_id = query.from_user.id
+    # student_name_tg = query.from_user.full_name
+    # print("Выбрал(а) роль студента: ", student_name_tg, "ID: ", student_tg_id)
     await StudentStates.student_authorization.set()
+ 
 
-
-@dp.message_handler(state='student_authorization')
-async def studentis(message: types.Message):
+@dp.message_handler(state=StudentStates.student_authorization)
+async def student_choosing_group(message: types.Message):
+    print(message.text, message.from_user.id)
     await StudentService.init_student(message.text, message.from_user.id)
 
 
-# @dp.callback_query_handler(text='teacher')
-# async def teacher_authorized(query: types.CallbackQuery):
-#     await query.message.reply(
-#         "Введите ключ авторизации!"
-#     )
-#     teacher_id = query.from_user.id
-#     teacher_name = query.from_user.full_name
-
-#     print("Выбрал(а) роль преподавателя: ", teacher_name, "ID: ", teacher_id)
-#     TeacherStates.awaiting_key.set()
 
 
-# @dp.message_handler(state=TeacherStates.awaiting_key)
-# async def teacher_authorized(message: types.Message):
-#     success = await UserService.init_user('teacher',
-#                                           message.from_user.id,
-#                                           message.text)
-#     if success:
-#         await message.reply(
-#             "Авторизация прошла успешно"
-#         )
-#     else:
-#         await message.reply(
-#             "Код недействителен"
-#         )
-#     teacher_id = message.from_user.id
-#     teacher_name = message.from_user.full_name
+# @dp.message_handler(state='student_authorization')
+# async def studentis(message: types.Message):
+    
+
+
+@dp.callback_query_handler(text='teacher')
+async def teacher_authorized(query: types.CallbackQuery):
+    await query.message.reply(
+        "Введите ключ авторизации!"
+    )
+    teacher_id = query.from_user.id
+    teacher_name = query.from_user.full_name
+
+    print("Выбрал(а) роль преподавателя: ", teacher_name, "ID: ", teacher_id)
+    await TeacherStates.awaiting_key.set()
+
+
+@dp.message_handler(state=TeacherStates.awaiting_key)
+async def teacher_authorized(message: types.Message):
+    success = await TeacherService.init_teacher('teacher',
+                                          message.from_user.id,
+                                          message.text)
+    if success:
+        await message.reply(
+            "Авторизация прошла успешно"
+        )
+    else:
+        await message.reply(
+            "Код недействителен"
+        )
+    
 
 
 # @dp.message_handler(state=AdminStates.awaiting_key)
