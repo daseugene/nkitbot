@@ -40,7 +40,7 @@ class Database:
     async def _firt_init_user(self, conn):
         query = """CREATE TABLE IF NOT EXISTS students (
             user_id char(15),
-            group_no varchar(30)
+            name varchar(30)
         );"""
         await conn.execute(query=query)
 
@@ -60,39 +60,15 @@ class Database:
         '''
         INSERT INTO teachers (auth_code)
         VALUES ('key')
-        ''',  # user_id(int): teacher_id, key(str): auth_code
+        ''',  
 
-      #  async def check_auth_teacher(conn, table, field, value, key):
-       #     query = f"SELECT auth_code FROM teachers WHERE auth_code = 'key', key"
-        #
-        #   row = await conn.fetchrow(query)
-
-    # """Проверяем и авторизуем учителя
-
-     #   Args:
-     #       user_id (int): Telegram ID пользователя
-      #      key (str): Ключ-пароль
-
-     #   Returns:
-      #      bool: True если пароль верный
-
-     #   Тут мы должны взять ключ, который передал юзер,
-     #   после чего мы ищем в базе данных запись с этим ключом
-   #     если запись найдена - вписываем в нее user_id
-     #   и обязательно удаляем из неё ключ.
-    #    """
-    # pass
-
-    async def init_student(
-        self,
-        group_no: str,
-        user_id: int
-    ) -> bool:
-        query = ("INSERT INTO students (user_id, group_no)"
-                 f" VALUES ('{user_id}', '{group_no}' )")
+    async def init_student(self, name, user_id) -> bool:
+        query = ("INSERT INTO students (user_id, name)"
+                 f" VALUES ('{user_id}', '{name}' )")
         conn = await self._get_connection()
         await conn.execute(query)
         await conn.close()
+
 
     async def init_admin(self) -> bool:
         pass
