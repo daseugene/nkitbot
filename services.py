@@ -21,8 +21,7 @@ class StudentService:
 class TeacherService:
     @staticmethod
     async def init_teacher(
-        name: str,
-        user_id: int,
-        auth_code: str,
+        teacher_id: int,
+        auth_key: str,
     ) -> bool:
-        await db_manager.init_teacher
+        await db_manager.init_teacher(auth_key, teacher_id)

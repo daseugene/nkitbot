@@ -48,30 +48,23 @@ class Database:
     async def _firt_init_teacher(self, conn):
         query = """CREATE TABLE IF NOT EXISTS teachers (
             user_id char(15),
-            name char(30),
             auth_code char(10)
         );"""
         await conn.execute(query=query)
 
-    async def init_teacher(
-        self,
-        user_id: int,
-        key: str
-    ) -> bool:
-        query = ("SELECT (auth_code) from teachers where auth_code = ('{key}')")
-        
-        # ("INSERT INTO teachers (user_id, key)"
-        #          f"VALUES ('{user_id}', '{key}')")
+    async def init_teacher(self, teacher_id, auth_key) -> bool:
+        query = ("SELECT auth_code from teachers WHERE ( auth_code = '{auth_key}')")
+      #  query = ("SELECT EXISTS(SELECT (auth_code) from teachers where (auth_code) = ('{key}'))")
         conn = await self._get_connection()
         await conn.execute(query)
         await conn.close()
-        
-        
-        ('''
-        INSERT INTO teachers (auth_code)
-        VALUES ('key')
-        ''')
+        if query == True:
+            return True
+        else: 
+            return False       
 
+        
+        
 
     async def init_student(self, groups, user_id) -> bool:
         query = ("INSERT INTO students (user_id, group_student)"

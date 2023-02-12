@@ -29,11 +29,6 @@ async def student_authorized(query: types.CallbackQuery):
     await query.message.answer(
         "Напиши номер своей группы!"
     )
-    # await StudentService.init_student(query.data, query.from_user.id)
-    # await query.message.delete()
-    # student_tg_id = query.from_user.id
-    # student_name_tg = query.from_user.full_name
-    # print("Выбрал(а) роль студента: ", student_name_tg, "ID: ", student_tg_id)
     await StudentStates.student_authorization.set()
  
 
@@ -64,9 +59,11 @@ async def teacher_authorized(query: types.CallbackQuery):
 
 @dp.message_handler(state=TeacherStates.awaiting_key)
 async def teacher_authorized(message: types.Message):
-    success = await TeacherService.init_teacher('teacher',
+    success = await TeacherService.init_teacher(
                                           message.from_user.id,
                                           message.text)
+    key = message.text 
+    print(message.from_user.full_name, "input", key)
     if success:
         await message.reply(
             "Авторизация прошла успешно"
