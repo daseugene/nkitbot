@@ -59,19 +59,18 @@ async def teacher_authorized(query: types.CallbackQuery):
 
 @dp.message_handler(state=TeacherStates.awaiting_key)
 async def teacher_authorized(message: types.Message):
-    success = await TeacherService.init_teacher(
-                                          message.from_user.id,
+    success = await TeacherService.check_code(
                                           message.text)
-    key = message.text 
-    print(message.from_user.full_name, "input", key)
-    if success:
-        await message.reply(
-            "Авторизация прошла успешно"
-        )
-    else:
+    if not success:
         await message.reply(
             "Код недействителен"
         )
+    else:
+        await message.reply(
+                "WELL CUM"
+        )                                      
+    auth_key = message.text 
+    print(message.from_user.full_name, "input", auth_key)
     
 
 

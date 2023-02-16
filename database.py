@@ -48,27 +48,27 @@ class Database:
     async def _firt_init_teacher(self, conn):
         query = """CREATE TABLE IF NOT EXISTS teachers (
             user_id char(15),
-            auth_code char(10)
+            code text
         );"""
         await conn.execute(query=query)
 
-    async def init_teacher(self, teacher_id, auth_key) -> bool:
-        query = ("SELECT auth_code from teachers WHERE ( auth_code = '{auth_key}')")
-      #  query = ("SELECT EXISTS(SELECT (auth_code) from teachers where (auth_code) = ('{key}'))")
-        conn = await self._get_connection()
-        await conn.execute(query)
-        await conn.close()
-        if query == True:
-            return True
-        else: 
-            return False       
+    async def init_teacher(self, auth_key, teacher_id) -> bool:
+        ...
+    
 
-        
+    async def is_code_exists(self, code):
+        query = f"SELECT EXISTS(SELECT * FROM teachers WHERE code = '{code}')" 
+        conn = await self._get_connection()
+        response = await conn.fetch(query)
+        return response[0].get("exists")
+            
+
+           
         
 
     async def init_student(self, groups, user_id) -> bool:
         query = ("INSERT INTO students (user_id, group_student)"
-                 f" VALUES ('{user_id}', '{groups}' )")
+                 f" VALUES ('{user_id}', '{groups}' );")
         conn = await self._get_connection()
         await conn.execute(query)
         await conn.close()
@@ -79,6 +79,6 @@ class Database:
 
     async def get_users_list(self) -> list:
         conn = await self._get_connection()
-        result = await conn.fetch('SELECT * FROM "teachers";')
+        result = await conn.fetch('SELECT * FROM teachers;')
         await conn.close()
         return result

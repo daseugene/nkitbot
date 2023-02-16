@@ -22,6 +22,12 @@ class TeacherService:
     @staticmethod
     async def init_teacher(
         teacher_id: int,
-        auth_key: str,
+        code: str,
     ) -> bool:
-        await db_manager.init_teacher(auth_key, teacher_id)
+        await db_manager.init_teacher(teacher_id, code)
+    
+    @staticmethod
+    async def check_code(
+        code: str
+    ) -> bool:
+        return await db_manager.is_code_exists(code)
