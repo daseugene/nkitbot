@@ -30,11 +30,13 @@ async def student_authorized(query: types.CallbackQuery):
         "Выбрана роль СТУДЕНТ. Напиши номер своей группы!",
         
     )
+    await query.message.delete()
     await StudentStates.student_authorization.set()
  
 
 @dp.message_handler(state=StudentStates.student_authorization)
 async def student_choosing_group(message: types.Message):
+    await message.delete()
     print(message.text, message.from_user.id)
     await StudentService.init_student(message.text, message.from_user.id)
 
