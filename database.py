@@ -35,6 +35,7 @@ class Database:
         conn = await self._get_connection()
         await self._firt_init_user(conn)
         await self._firt_init_teacher(conn)
+        await self._first_init_admin(conn)
         await conn.close()
 
     async def _firt_init_user(self, conn):
@@ -47,6 +48,14 @@ class Database:
 
     async def _firt_init_teacher(self, conn):
         query = """CREATE TABLE IF NOT EXISTS teachers (
+            user_id char(15),
+            code text
+        );"""
+        await conn.execute(query=query)
+
+
+    async def _first_init_admin(self, conn):
+        query = """CREATE TABLE IF NOT EXISTS admins (
             user_id char(15),
             code text
         );"""
@@ -70,8 +79,15 @@ class Database:
         await conn.close()
 
 
-    async def init_admin(self) -> bool:
-        pass
+    async def init_admin(self, code) -> bool:
+        ...
+
+    async def is_admin_code_exists(self, code) -> bool:
+        query = f"SELECT EXISTS(SELECT * FROM admins WHERE code = '{code}')"
+        conn = await self._get_connection()
+        response = await conn.fetch(query)
+        return response[0].get("exists")
+
 
     async def get_users_list(self) -> list:
         conn = await self._get_connection()

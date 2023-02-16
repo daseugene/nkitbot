@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 import asyncio
 
-from services import StudentService, db_manager, TeacherService
+from services import StudentService, db_manager, TeacherService, AdminService
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
 
@@ -23,7 +23,7 @@ async def command_start(message: types.Message):
         reply_markup=keyboard.role_buttons
     )
 
-
+### ---- STUDENT ----
 @dp.callback_query_handler(text='student')
 async def student_authorized(query: types.CallbackQuery):
     await query.message.answer(
@@ -32,32 +32,31 @@ async def student_authorized(query: types.CallbackQuery):
     )
     await query.message.delete()
     await StudentStates.student_authorization.set()
- 
 
 @dp.message_handler(state=StudentStates.student_authorization)
 async def student_choosing_group(message: types.Message):
     await message.delete()
     print(message.text, message.from_user.id)
     await StudentService.init_student(message.text, message.from_user.id)
-
-
-
-
-# @dp.message_handler(state='student_authorization')
-# async def studentis(message: types.Message):
+    await message.answer("Теперь нам известно, что ты студент группы " + message.text)
+    await StudentStates.stud_ready_to_study.set()
+    await message.answer("Чтобы продолжить работу в системе, отправьте любое сообщение в чат.")
     
 
+
+
+@dp.message_handler(state=StudentStates.stud_ready_to_study)
+async def stud_wyd(message: types.Message):
+    await message.answer("Что будем делать?", reply_markup=keyboard.student_buttons)
+
+
+###----- TEACHER -------
 
 @dp.callback_query_handler(text='teacher')
 async def teacher_authorized(query: types.CallbackQuery):
     await query.message.reply(
-        "Была выбрана роль ПРЕПОДАВАТЕЛЬ. Введите ключ авторизации!",
-        
+        "Была выбрана роль ПРЕПОДАВАТЕЛЬ. Введите ключ авторизации!"    
     )
-    teacher_id = query.from_user.id
-    teacher_name = query.from_user.full_name
-
-    print("Выбрал(а) роль преподавателя: ", teacher_name, "ID: ", teacher_id)
     await TeacherStates.awaiting_key.set()
 
 
@@ -70,27 +69,53 @@ async def teacher_authorized(message: types.Message):
             "Код недействителен"
         )
     else:
-        await message.reply(
-                "Добро пожаловать "
-        )                                      
-    auth_key = message.text 
-    print(message.from_user.full_name, "input", auth_key)
+        await message.answer(
+                "Добро пожаловать, " + message.from_user.full_name +
+                " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте любое сообщение в чат.",
+                await TeacherStates.ready_to_work.set()
+                
+                
+                
+        )
+                                             
     
 
+@dp.message_handler(state=TeacherStates.ready_to_work)
+async def t_wyd(message: types.Message):
+    await message.answer(
+        "Что будем делать?",
+        reply_markup=keyboard.teacher_buttons
+        
+        
+    )
 
-# @dp.message_handler(state=AdminStates.awaiting_key)
-# async def admin_authorization(message: types.Message):
-#     success = await UserService.init_user('admin',
-#                                           message.from_user.id,
-#                                           message.text
-#                                           )
 
-#     if success:
-#         await message.reply(
-#             "Добро пожаловать в систему, ", message.from_user.full_name
-#         )
-#     else:
-#         await message.reply("Код недействителен. ")
+
+### ----- ADMIN -----
+@dp.message_handler(state=AdminStates.awaiting_key)
+async def admin_authorization(message: types.Message):
+    success = await AdminService.check_admin_code(
+                                          message.text
+                                          )
+
+    if success:
+        await message.reply(
+            "Добро пожаловать в систему, " + message.from_user.full_name
+        )
+    else:
+        await message.reply("Код недействителен. ")
+
+@dp.callback_query_handler(text='admin')
+async def admin(query: types.CallbackQuery):
+    await query.message.answer("""
+                                Чтобы убедиться в том, что Вы АДМИН, введите код авторизации в чат.
+                                """)
+    await query.message.delete()
+
+    await AdminStates.awaiting_key.set()
+
+
+### ----- SYSTEM AND HELP BUTTONS ----
 
 
 @dp.message_handler(commands=['about'])
@@ -100,11 +125,6 @@ async def process_about_command(message: types.Message):
         ("Этот бот упростит твою учёбу."
          "Следить за обновлениями можно по ссылке: "),
         reply_markup=keyboard.help_buttons)
-
-# @dp.message_handler()
-# async def after_autorization(message: types.Message):
- #   await message.reply("Напиши номер своей группы, студент!")
-
 
 if __name__ == '__main__':
     print('Starting bot...')

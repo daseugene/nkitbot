@@ -31,3 +31,19 @@ class TeacherService:
         code: str
     ) -> bool:
         return await db_manager.is_code_exists(code)
+
+
+class AdminService:
+    @staticmethod
+    async def init_admin(
+        admin_id: int,
+        code:str
+    ) -> bool:
+        await db_manager.init_admin(admin_id, code)
+    
+    @staticmethod
+    async def check_admin_code(
+        code: str
+    ) -> bool:
+        return await db_manager.is_admin_code_exists(code)
+        

@@ -11,6 +11,7 @@ class AuthStates(StatesGroup):
 
 class TeacherStates(StatesGroup):
     awaiting_key = State()
+    ready_to_work = State()
 
 
 class AdminStates(StatesGroup):
@@ -20,4 +21,6 @@ class AdminStates(StatesGroup):
 
 class StudentStates(StatesGroup):
     student_authorization = State()
+    stud_ready_to_study = State()
+    
     
