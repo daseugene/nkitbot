@@ -27,7 +27,8 @@ async def command_start(message: types.Message):
 @dp.callback_query_handler(text='student')
 async def student_authorized(query: types.CallbackQuery):
     await query.message.answer(
-        "Напиши номер своей группы!"
+        "Выбрана роль СТУДЕНТ. Напиши номер своей группы!",
+        
     )
     await StudentStates.student_authorization.set()
  
@@ -48,7 +49,8 @@ async def student_choosing_group(message: types.Message):
 @dp.callback_query_handler(text='teacher')
 async def teacher_authorized(query: types.CallbackQuery):
     await query.message.reply(
-        "Введите ключ авторизации!"
+        "Была выбрана роль ПРЕПОДАВАТЕЛЬ. Введите ключ авторизации!",
+        
     )
     teacher_id = query.from_user.id
     teacher_name = query.from_user.full_name
@@ -67,7 +69,7 @@ async def teacher_authorized(message: types.Message):
         )
     else:
         await message.reply(
-                "WELL CUM"
+                "Добро пожаловать "
         )                                      
     auth_key = message.text 
     print(message.from_user.full_name, "input", auth_key)

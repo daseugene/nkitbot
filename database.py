@@ -61,10 +61,6 @@ class Database:
         conn = await self._get_connection()
         response = await conn.fetch(query)
         return response[0].get("exists")
-            
-
-           
-        
 
     async def init_student(self, groups, user_id) -> bool:
         query = ("INSERT INTO students (user_id, group_student)"
