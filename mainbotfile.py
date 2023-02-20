@@ -63,7 +63,7 @@ async def teacher_authorized(query: types.CallbackQuery):
 @dp.message_handler(state=TeacherStates.awaiting_key)
 async def teacher_authorized(message: types.Message):
     success = await TeacherService.check_code(
-                                          message.text)
+                                          message.text, )
     if not success:
         await message.reply(
             "Код недействителен"
@@ -71,7 +71,7 @@ async def teacher_authorized(message: types.Message):
     else:
         await message.answer(
                 "Добро пожаловать, " + message.from_user.full_name +
-                " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте любое сообщение в чат.",
+                " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте код повторно.",
                 await TeacherStates.ready_to_work.set()
                 
                 
@@ -82,6 +82,8 @@ async def teacher_authorized(message: types.Message):
 
 @dp.message_handler(state=TeacherStates.ready_to_work)
 async def t_wyd(message: types.Message):
+    await TeacherService.init_teacher(
+                                message.from_user.id, message.text)
     await message.answer(
         "Что будем делать?",
         reply_markup=keyboard.teacher_buttons

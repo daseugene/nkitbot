@@ -1,6 +1,6 @@
 from asyncpg.connection import Connection
 import asyncpg
-from aiogram.dispatcher import Dispatcher
+
 
 # from mainbotfile import student_authorized
 
@@ -61,9 +61,18 @@ class Database:
         );"""
         await conn.execute(query=query)
 
-    async def init_teacher(self, auth_key, teacher_id) -> bool:
-        ...
+    async def init_teacher(self, teacher_id, code) -> bool:
+        query = f"UPDATE teachers SET user_id = '{teacher_id}' WHERE code = '{code}'"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
+
+        # response = await conn.fetch(query1, query2)
+        # print(response[0].get("exists"))
     
+
+    # async def delete_code_teacher(self, teacher_id, code) --> bool:
+    #     pass
 
     async def is_code_exists(self, code):
         query = f"SELECT EXISTS(SELECT * FROM teachers WHERE code = '{code}')" 
@@ -79,8 +88,11 @@ class Database:
         await conn.close()
 
 
-    async def init_admin(self, code) -> bool:
-        ...
+    async def init_admin(self) -> bool:
+        query = f"UPDATE teachers SET user_id = '{teacher_id}' WHERE code = '{code}'"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
 
     async def is_admin_code_exists(self, code) -> bool:
         query = f"SELECT EXISTS(SELECT * FROM admins WHERE code = '{code}')"

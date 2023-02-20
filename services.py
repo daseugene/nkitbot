@@ -22,7 +22,7 @@ class TeacherService:
     @staticmethod
     async def init_teacher(
         teacher_id: int,
-        code: str,
+        code: str
     ) -> bool:
         await db_manager.init_teacher(teacher_id, code)
     
