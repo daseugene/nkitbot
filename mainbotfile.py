@@ -72,18 +72,16 @@ async def teacher_authorized(message: types.Message):
         await message.answer(
                 "Добро пожаловать, " + message.from_user.full_name +
                 " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте код повторно.",
-                await TeacherStates.ready_to_work.set()
-                
-                
-                
-        )
+                await TeacherStates.ready_to_work.set())      
+        await TeacherService.init_teacher(
+                                message.from_user.id, message.text)
                                              
     
 
 @dp.message_handler(state=TeacherStates.ready_to_work)
 async def t_wyd(message: types.Message):
-    await TeacherService.init_teacher(
-                                message.from_user.id, message.text)
+    # await TeacherService.init_teacher(
+    #                             message.from_user.id, message.text)
     await message.answer(
         "Что будем делать?",
         reply_markup=keyboard.teacher_buttons
