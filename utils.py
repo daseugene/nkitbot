@@ -22,5 +22,10 @@ class AdminStates(StatesGroup):
 class StudentStates(StatesGroup):
     student_authorization = State()
     stud_ready_to_study = State()
+
+    # -- SCHEDULE --
+
+    awaiting_schedule = State()
+    
     
     

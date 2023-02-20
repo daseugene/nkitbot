@@ -23,10 +23,11 @@ role_buttons = InlineKeyboardMarkup(row_width=1).row(
 student_buttons = InlineKeyboardMarkup(row_width=1).row(
     *(
         InlineKeyboardButton(
-            "Расписание", callback_data='schedule'
+            "Расписание", 
+            callback_data='student_schedule'
         ),
         InlineKeyboardButton(
-            "Получить ссылку на группу ВК",
+            "Группа ВК",
             callback_data='attention'
         ),
         InlineKeyboardButton(

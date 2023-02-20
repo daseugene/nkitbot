@@ -16,6 +16,13 @@ class StudentService:
         user_id: int,
     ) -> bool:
         await db_manager.init_student(groups, user_id)
+    
+
+    @staticmethod
+    async def student_schedule(
+        user_id: int
+    ) -> bool:
+        await db_manager.student_schedule(user_id)
 
 
 class TeacherService:
