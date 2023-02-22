@@ -8,7 +8,7 @@ import asyncio
 from services import StudentService, db_manager, TeacherService, AdminService
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
-from parse import Reader
+
 
 
 bot = Bot(token='5674127673:AAGiSaquLQYIfptAxU3fdrX2mxAOxIDtJ64')
@@ -50,8 +50,7 @@ async def student_choosing_group(message: types.Message):
 async def stud_wyd(message: types.Message):
     await message.answer("Что будем делать?", reply_markup=keyboard.student_buttons)
 
-
-@dp.callback_query_handler(text='student_schedule')
+@dp.callback_query_handler(state=StudentStates.stud_ready_to_study, text = 'student_schedule')
 async def stud_schedule(query: types.CallbackQuery):
     await query.message.answer("Обрабатываем Ваш запрос...")
     await StudentStates.awaiting_schedule.set()
