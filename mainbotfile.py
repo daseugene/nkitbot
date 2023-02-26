@@ -92,14 +92,15 @@ async def teacher_authorized(message: types.Message):
 
 @dp.message_handler(state=TeacherStates.ready_to_work)
 async def t_wyd(message: types.Message):
-    # await TeacherService.init_teacher(
-    #                             message.from_user.id, message.text)
+    await TeacherService.finish_auth(
+                                message.from_user.id)
     await message.answer(
         "Что будем делать?",
         reply_markup=keyboard.teacher_buttons
         
         
     )
+    # await TeacherStates.ready_to_work.set()
 
 
 
@@ -114,18 +115,35 @@ async def admin_authorization(message: types.Message):
         await message.reply(
             "Добро пожаловать в систему, " + message.from_user.full_name
         )
+        await AdminStates.ready_to_work_admin.set()      
+        await AdminService.final_auth(
+                                message.from_user.id, message.text)
+
     else:
         await message.reply("Код недействителен. ")
 
-@dp.callback_query_handler(text='admin')
-async def admin(query: types.CallbackQuery):
-    await query.message.answer("""
-                                Чтобы убедиться в том, что Вы АДМИН, введите код авторизации в чат.
-                                """)
-    await query.message.delete()
+# @dp.callback_query_handler(text='admin')
+# async def admin(query: types.CallbackQuery):
+#     await query.message.answer("""
+#                                 Чтобы убедиться в том, что Вы АДМИН, введите код авторизации в чат.
+#                                 """)
+#     await query.message.delete()
+#     await AdminService.init_admin(
+#         query.fr
+#     )
+#     await AdminStates.awaiting_key.set()
 
-    await AdminStates.awaiting_key.set()
-
+# @dp.message_handler(state=AdminStates.ready_to_work_admin)
+# async def t_wyd(message: types.Message):
+#     await AdminService.final_auth(
+#                                 message.from_user.id)
+#     await message.answer(
+#         "Что будем делать?",
+#         reply_markup=keyboard.teacher_buttons
+        
+        
+    )
+    # await TeacherStates.ready_to_work.set()
 
 ### ----- SYSTEM AND HELP BUTTONS ----
 

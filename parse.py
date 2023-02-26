@@ -1,28 +1,20 @@
-import requests
-
-# from PyPDF2 import PdfReader
-
-# class Reader:
-#     @staticmethod
-#     async def reader():
-#         reader = PdfReader("1824.pdf")
-#         num_of_pages = len(reader.pages)
-#         page = reader.pages[0]
-#         print(page.extract_text((0, 90)))
- 
+from PyPDF2 import PdfReader
 
 
+reader = PdfReader("1924, 1824.pdf")
+page = reader.pages[0]
 
-# class StudentParse:
-#     pass
+
+parts = []
+
+def visitor_body(text, cm, tm, fontDict, fontSize):
+    y = tm[5]
+    if y > 50 and y < 720:
+        parts.append(text)
 
 
 
+page.extract_text(visitor_text=visitor_body)
+text_body = "".join(parts)
 
-# class TeacherParse:
-#     pass
-
-
-
-res = requests.get('https://www.nkit89.ru/sveden/education/#raspisanie')
-print(res.text)
+print(parts)

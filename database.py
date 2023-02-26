@@ -42,8 +42,12 @@ class Database:
         conn = await self._get_connection()
         response = await conn.fetch(query)
         return response[0].get("exists")
-
-
+    
+    async def auth_final(self, teacher_id):
+        query = f"UPDATE teachers SET code = ' ' WHERE user_id = '{teacher_id}'"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
 
 
 
@@ -82,23 +86,23 @@ class Database:
         );"""
         await conn.execute(query=query)
 
-    # async def init_admin(self) -> bool:
-    #     query = f"UPDATE teachers SET user_id = '{_id}' WHERE code = '{code}'"
-    #     conn = await self._get_connection()
-    #     await conn.execute(query)
-    #     await conn.close()
+    async def init_admin(self, code, admin_id) -> bool:
+        query = f"UPDATE teachers SET user_id = '{admin_id}' WHERE code = '{code}'"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
 
     async def is_admin_code_exists(self, code) -> bool:
         query = f"SELECT EXISTS(SELECT * FROM admins WHERE code = '{code}')"
         conn = await self._get_connection()
         response = await conn.fetch(query)
         return response[0].get("exists")
-
-
-
-
-
-
+    
+    async def auth_ad_final(self, admin_id):
+        query = f"UPDATE teachers SET code = ' ' WHERE user_id = '{admin_id}'"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close() 
 
 # --- SERVICE --- 
     async def get_users_list(self) -> list:

@@ -38,6 +38,12 @@ class TeacherService:
         code: str
     ) -> bool:
         return await db_manager.is_code_exists(code)
+    
+    @staticmethod
+    async def finish_auth(
+        teacher_id: int
+    ) -> bool:
+        await db_manager.auth_final(teacher_id)
 
 
 class AdminService:
@@ -54,3 +60,8 @@ class AdminService:
     ) -> bool:
         return await db_manager.is_admin_code_exists(code)
         
+    @staticmethod
+    async def final_auth(
+        admin_id: int
+    ) -> bool:
+        await db_manager.auth_ad_final(admin_id)
