@@ -1,20 +1,9 @@
-from PyPDF2 import PdfReader
-
+from PyPDF2 import PdfReader, PdfWriter
 
 reader = PdfReader("1924, 1824.pdf")
+
+number_of_pages = len(reader.pages)
 page = reader.pages[0]
+text = page.extract_text()
 
-
-parts = []
-
-def visitor_body(text, cm, tm, fontDict, fontSize):
-    y = tm[5]
-    if y > 50 and y < 720:
-        parts.append(text)
-
-
-
-page.extract_text(visitor_text=visitor_body)
-text_body = "".join(parts)
-
-print(parts)
+print(text)

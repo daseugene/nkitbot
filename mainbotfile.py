@@ -122,28 +122,7 @@ async def admin_authorization(message: types.Message):
     else:
         await message.reply("Код недействителен. ")
 
-# @dp.callback_query_handler(text='admin')
-# async def admin(query: types.CallbackQuery):
-#     await query.message.answer("""
-#                                 Чтобы убедиться в том, что Вы АДМИН, введите код авторизации в чат.
-#                                 """)
-#     await query.message.delete()
-#     await AdminService.init_admin(
-#         query.fr
-#     )
-#     await AdminStates.awaiting_key.set()
 
-# @dp.message_handler(state=AdminStates.ready_to_work_admin)
-# async def t_wyd(message: types.Message):
-#     await AdminService.final_auth(
-#                                 message.from_user.id)
-#     await message.answer(
-#         "Что будем делать?",
-#         reply_markup=keyboard.teacher_buttons
-        
-        
-    )
-    # await TeacherStates.ready_to_work.set()
 
 ### ----- SYSTEM AND HELP BUTTONS ----
 
