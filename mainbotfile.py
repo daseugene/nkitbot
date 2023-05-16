@@ -4,11 +4,20 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 import asyncio
+from aiogram.dispatcher.filters import ContentTypeFilter
+from aiogram.types import Message, ContentType
+from aiogram.dispatcher import FSMContext
+import os
+from aiogram.types import ParseMode
+import pathlib
+from pathlib import Path
+import PyPDF2
+
 
 from services import StudentService, db_manager, TeacherService, AdminService
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
-
+from parse import Parse
 
 
 bot = Bot(token='5674127673:AAGiSaquLQYIfptAxU3fdrX2mxAOxIDtJ64')
@@ -105,22 +114,73 @@ async def t_wyd(message: types.Message):
 
 
 ### ----- ADMIN -----
+@dp.callback_query_handler(text='admin')
+async def teacher_authorized(query: types.CallbackQuery):
+    await query.message.reply(
+        "Была выбрана роль АДМИНИСТРАТОР. Введите ключ авторизации!"    
+    )
+    await AdminStates.awaiting_key.set()
+
 @dp.message_handler(state=AdminStates.awaiting_key)
 async def admin_authorization(message: types.Message):
     success = await AdminService.check_admin_code(
                                           message.text
                                           )
-
     if success:
         await message.reply(
-            "Добро пожаловать в систему, " + message.from_user.full_name
+            "Добро пожаловать в систему, " + message.from_user.full_name, reply_markup=keyboard.admin_buttons
         )
         await AdminStates.ready_to_work_admin.set()      
+        
         await AdminService.final_auth(
-                                message.from_user.id, message.text)
-
+                                message.from_user.id)
     else:
         await message.reply("Код недействителен. ")
+
+
+SAVE_DIR = "pdf/files/"
+
+@dp.callback_query_handler(text='upload_new_rasp')
+async def transition_to_uploading(query: types.CallbackQuery):
+    await AdminStates.waiting_for_file.set()
+    await query.message.reply("Отправьте любое сообщение в чат.")
+
+
+
+@dp.message_handler(content_types=ContentType.DOCUMENT, state=AdminStates.waiting_for_file)
+async def handle_pdf(message: types.Message):
+    if message.document.mime_type == "application/pdf":
+        if not os.path.exists(SAVE_DIR):
+            os.makedirs(SAVE_DIR)
+            file_path = f"{SAVE_DIR}{message.document.file_name}"
+            await message.document.download(file_path)
+
+            await message.answer(f"Файл {message.document.file_name} сохранен в {SAVE_DIR}")
+            await AdminStates.ready_to_work_admin.set()
+
+
+@dp.message_handler(commands=['parse_pdf'])
+async def send_pdf_content(message: types.Message):
+    # Открываем файл и создаем объект pdfReader
+    pdfFileObj = open('grps.pdf', 'rb')
+    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+
+    # Получаем количество страниц в документе
+    num_pages = pdfReader.numPages
+
+    # Читаем содержимое каждой страницы и добавляем в переменную text
+    text = ""
+    for page in range(num_pages):
+        pageObj = pdfReader.getPage(page)
+        text += pageObj.extractText()
+
+    # Закрываем файл
+    pdfFileObj.close()
+
+    # Отправляем содержимое в сообщении пользователю
+    await bot.send_message(message.chat.id, text)
+
+
 
 
 

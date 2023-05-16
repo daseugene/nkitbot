@@ -107,7 +107,7 @@ class Database:
 # --- SERVICE --- 
     async def get_users_list(self) -> list:
         conn = await self._get_connection()
-        result = await conn.fetch('SELECT * FROM teachers;')
+        result = await conn.fetch('SELECT * ')
         await conn.close()
         return result
 

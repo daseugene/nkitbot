@@ -1,9 +1,12 @@
-from PyPDF2 import PdfReader, PdfWriter
+import PyPDF2
 
-reader = PdfReader("1924, 1824.pdf")
-
-number_of_pages = len(reader.pages)
-page = reader.pages[0]
-text = page.extract_text()
-
-print(text)
+class Parse:
+    def parse_pdf(file_path, keywords):
+        with open(file_path, 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            for page in pdf_reader.pages:
+                text = page.extractText()
+                for keywords in keywords:
+                    if keywords in text:
+                        return text
+        return None

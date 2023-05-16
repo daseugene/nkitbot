@@ -8,10 +8,10 @@ role_buttons = InlineKeyboardMarkup(row_width=1).row(
             "Студент",
             callback_data='student'
         ),
-        InlineKeyboardButton(
-            "Преподаватель",
-            callback_data='teacher'
-        ),
+        # InlineKeyboardButton(
+        #     "Преподаватель",
+        #     callback_data='teacher'
+        # ),
         InlineKeyboardButton(
             "Админ",
             callback_data='admin'
@@ -52,6 +52,23 @@ teacher_buttons = InlineKeyboardMarkup(row_width=1).row(
         )
     )
 )
+
+admin_buttons = InlineKeyboardMarkup(row_width=1).row(
+    *(
+        InlineKeyboardButton(
+            "Обновить расписание", callback_data='upload_new_rasp'
+        ),
+        InlineKeyboardButton(
+            "Объявление",
+            callback_data='attention'
+        ),
+        InlineKeyboardButton(
+            "Погода",
+            callback_data='weather'
+        )
+    )
+)
+
 
 # help buttons(link)
 

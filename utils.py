@@ -19,6 +19,8 @@ class AdminStates(StatesGroup):
     choosing_user_for_add = State()
     choosing_user_for_delete = State()
     ready_to_work_admin = State()
+    waiting_for_file = State()
+    
 
 class StudentStates(StatesGroup):
     student_authorization = State()
