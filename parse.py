@@ -1,12 +1,5 @@
-import PyPDF2
+from pdfminer.high_level import extract_text
 
-class Parse:
-    def parse_pdf(file_path, keywords):
-        with open(file_path, 'rb') as pdf_file:
-            pdf_reader = PyPDF2.PdfReader(pdf_file)
-            for page in pdf_reader.pages:
-                text = page.extractText()
-                for keywords in keywords:
-                    if keywords in text:
-                        return text
-        return None
+text = extract_text('grps.pdf')
+
+print(text)
