@@ -33,9 +33,13 @@ student_buttons = InlineKeyboardMarkup(row_width=1).row(
         InlineKeyboardButton(
             "Погода",
             callback_data='weather'
+        ),
+        InlineKeyboardButton(
+            "По",
+            callback_data='students_schedule'
         )
     )
-)
+    )
 
 teacher_buttons = InlineKeyboardMarkup(row_width=1).row(
     *(

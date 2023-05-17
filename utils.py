@@ -29,6 +29,8 @@ class StudentStates(StatesGroup):
     # -- SCHEDULE --
 
     awaiting_schedule = State()
+    get_sch_state = State()
+    
     
     
     

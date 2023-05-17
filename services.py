@@ -9,6 +9,13 @@ db_manager = Database(
 )
 
 
+class GetResult:
+    @staticmethod
+    async def gett_result():
+        result = await db_manager.get_schedule()
+
+
+
 class StudentService:
     @staticmethod
     async def init_student(
@@ -23,6 +30,12 @@ class StudentService:
         user_id: int
     ) -> bool:
         await db_manager.student_schedule(user_id)
+
+    @staticmethod
+    async def get_schedule(
+        day: str,
+    ) -> bool:
+        await db_manager.get_schedule(day)
 
 
 class TeacherService:
@@ -65,3 +78,10 @@ class AdminService:
         admin_id: int
     ) -> bool:
         await db_manager.auth_ad_final(admin_id)
+
+
+class Result:
+    @staticmethod
+    async def get_schedule(
+        result
+    ): print()

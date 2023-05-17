@@ -21,6 +21,10 @@ class Database:
         self.DB_NAME = db_name
 
 
+
+
+   
+
 # ---- TEACHER ----
     async def _firt_init_teacher(self, conn):
         query = """CREATE TABLE IF NOT EXISTS teachers (
@@ -77,6 +81,13 @@ class Database:
         await conn.close()
         print(response[0].get())
         
+    async def get_schedule(self, day):
+        query = f"SELECT discipline from mygroup where day = '{day}'"
+        conn = await self._get_connection()
+        response = await conn.fetch(query)
+        return response
+        
+
 
 # --- ADMIN ---
     async def _first_init_admin(self, conn):
@@ -123,9 +134,19 @@ class Database:
         )
 
     async def first_time_init(self):
-        # 'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
+        #'postgresql://root:15386@127.0.0.1:5432/nkitbot_db'
         conn = await self._get_connection()
         await self._firt_init_user(conn)
         await self._firt_init_teacher(conn)
         await self._first_init_admin(conn)
+        await self.create_tables(conn)
         await conn.close()
+    
+    async def create_tables(self, conn):
+        query = """CREATE TABLE IF NOT EXISTS mygroup (
+            group_student char(5),
+            day text,
+            auditory text,
+            discipline text
+        );"""
+        await conn.execute(query=query)

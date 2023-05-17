@@ -4,25 +4,21 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 import asyncio
-from aiogram.dispatcher.filters import ContentTypeFilter
 from aiogram.types import Message, ContentType
 from aiogram.dispatcher import FSMContext
 import os
-from aiogram.types import ParseMode
-import pathlib
-from pathlib import Path
-import PyPDF2
 
-
-from services import StudentService, db_manager, TeacherService, AdminService
+from services import StudentService, db_manager, TeacherService, AdminService, GetResult
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
-from parse import Parse
+
 
 
 bot = Bot(token='5674127673:AAGiSaquLQYIfptAxU3fdrX2mxAOxIDtJ64')
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
+reply = GetResult.gett_result()
+
 
 
 @dp.message_handler(commands=['start'], state=None)
@@ -47,10 +43,12 @@ async def student_authorized(query: types.CallbackQuery):
 async def student_choosing_group(message: types.Message):
     await message.delete()
     print(message.text, message.from_user.id)
+  #
     await StudentService.init_student(message.text, message.from_user.id)
     await message.answer("Теперь нам известно, что ты студент группы " + message.text)
     await StudentStates.stud_ready_to_study.set()
     await message.answer("Чтобы продолжить работу в системе, отправьте любое сообщение в чат.")
+   # await get_schedule(group)
     
 
 
@@ -59,7 +57,7 @@ async def student_choosing_group(message: types.Message):
 async def stud_wyd(message: types.Message):
     await message.answer("Что будем делать?", reply_markup=keyboard.student_buttons)
 
-@dp.callback_query_handler(state=StudentStates.stud_ready_to_study, text = 'student_schedule')
+@dp.callback_query_handler(state=StudentStates.stud_ready_to_study, text='students_schedule')
 async def stud_schedule(query: types.CallbackQuery):
     await query.message.answer("Обрабатываем Ваш запрос...")
     await StudentStates.awaiting_schedule.set()
@@ -69,6 +67,25 @@ async def get_schedule(message: types.Message):
     await StudentService.student_schedule(message.from_user.id)
 
     await StudentStates.stud_ready_to_study.set()
+
+@dp.callback_query_handler(text='student_schedule')
+async def get_sche(query: types.CallbackQuery):
+    await query.message.reply(
+        "Введите интересующий день недели, на который хотите узнать расписание"
+    )
+    await StudentStates.get_sch_state.set()
+
+@dp.message_handler(state=StudentStates.get_sch_state)
+async def get_schedule(message: types.Message):
+    success = await StudentService.get_schedule(message.text)
+    if success:
+        await message.reply(
+            "Best",
+           reply_markup=keyboard.student_buttons
+        )
+        await StudentStates.stud_ready_to_study.set()     
+    else:
+        await message.reply(reply)
 
 
 ###----- TEACHER -------
