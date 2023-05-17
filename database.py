@@ -81,11 +81,14 @@ class Database:
         await conn.close()
         print(response[0].get())
         
-    async def get_schedule(self, day):
-        query = f"SELECT discipline from mygroup where day = '{day}'"
+    async def get_schedule(self, day: str) -> str:
+        query = f"SELECT discipline FROM mygroup WHERE day = '{day}'"
         conn = await self._get_connection()
         response = await conn.fetch(query)
-        return response
+        print('RESPONSE:', response)
+        result_string = ' | '
+        result = result_string.join(response)
+        return result
         
 
 

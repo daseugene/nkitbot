@@ -8,7 +8,7 @@ from aiogram.types import Message, ContentType
 from aiogram.dispatcher import FSMContext
 import os
 
-from services import StudentService, db_manager, TeacherService, AdminService, GetResult
+from services import StudentService, db_manager, TeacherService, AdminService
 import keyboard
 from utils import TeacherStates, AdminStates, StudentStates
 
@@ -17,7 +17,7 @@ from utils import TeacherStates, AdminStates, StudentStates
 bot = Bot(token='5674127673:AAGiSaquLQYIfptAxU3fdrX2mxAOxIDtJ64')
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
-reply = GetResult.gett_result()
+
 
 
 
@@ -77,15 +77,18 @@ async def get_sche(query: types.CallbackQuery):
 
 @dp.message_handler(state=StudentStates.get_sch_state)
 async def get_schedule(message: types.Message):
-    success = await StudentService.get_schedule(message.text)
-    if success:
-        await message.reply(
-            "Best",
-           reply_markup=keyboard.student_buttons
-        )
-        await StudentStates.stud_ready_to_study.set()     
-    else:
-        await message.reply(reply)
+
+    reply = await StudentService.get_schedule(message.text)
+    await message.reply(reply)
+    # success = await StudentService.get_schedule(message.text)
+    # if success:
+        # await message.reply(
+            # "Best",
+           # reply_markup=keyboard.student_buttons
+        # )
+        # await StudentStates.stud_ready_to_study.set()     
+    # else:
+        # await message.reply(reply)
 
 
 ###----- TEACHER -------

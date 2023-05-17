@@ -9,13 +9,6 @@ db_manager = Database(
 )
 
 
-class GetResult:
-    @staticmethod
-    async def gett_result():
-        result = await db_manager.get_schedule()
-
-
-
 class StudentService:
     @staticmethod
     async def init_student(
@@ -34,8 +27,9 @@ class StudentService:
     @staticmethod
     async def get_schedule(
         day: str,
-    ) -> bool:
-        await db_manager.get_schedule(day)
+    ) -> str:
+        result = await db_manager.get_schedule(day)
+        return result
 
 
 class TeacherService:
