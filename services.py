@@ -73,6 +73,29 @@ class AdminService:
     ) -> bool:
         await db_manager.auth_ad_final(admin_id)
 
+    @staticmethod
+    async def create_attention(
+        user_id: int,
+        attention: str,
+    ) -> bool:
+        return await db_manager.create_attention(user_id, attention)
+    
+    @staticmethod
+    async def send_attention_to_all(
+    ) -> list:
+        user_ids_list = await db_manager.get_all_user_list()
+        return user_ids_list
+    
+    @staticmethod
+    async def get_last_attention(
+    ) -> str:
+        message = await db_manager.get_last_attention()
+        return message
+    
+    @staticmethod
+    async def delete_old_attention(
+    ) -> bool:
+        await db_manager.delete_old_attention()
 
 class Result:
     @staticmethod

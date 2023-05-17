@@ -33,10 +33,6 @@ student_buttons = InlineKeyboardMarkup(row_width=1).row(
         InlineKeyboardButton(
             "Погода",
             callback_data='weather'
-        ),
-        InlineKeyboardButton(
-            "По",
-            callback_data='students_schedule'
         )
     )
     )
@@ -72,6 +68,20 @@ admin_buttons = InlineKeyboardMarkup(row_width=1).row(
         )
     )
 )
+
+
+admin_attention_buttons = InlineKeyboardMarkup(row_width=1).row(
+    *(
+        InlineKeyboardButton(
+            "Всем", callback_data='all_users'
+        ),
+        InlineKeyboardButton(
+            "1824",
+            callback_data='mygroup'
+        )
+    )
+)
+
 
 
 # help buttons(link)

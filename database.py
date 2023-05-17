@@ -58,7 +58,7 @@ class Database:
 # --- STUDENT ---
     async def _firt_init_user(self, conn):
             query = """CREATE TABLE IF NOT EXISTS students (
-                user_id char(15),
+                user_id char(9),
                 group_student char(5)
 
             );"""
@@ -82,13 +82,16 @@ class Database:
         print(response[0].get())
         
     async def get_schedule(self, day: str) -> str:
-        query = f"SELECT discipline FROM mygroup WHERE day = '{day}'"
+        query = f"SELECT discipline, auditory FROM mygroup WHERE day = '{day}'"
         conn = await self._get_connection()
         response = await conn.fetch(query)
-        print('RESPONSE:', response)
-        result_string = ' | '
-        result = result_string.join(response)
-        return result
+        result_string = ''
+        for item in response:
+            result_string += item['discipline'] + '\n'
+        return result_string
+    
+        # return result
+
         
 
 
@@ -99,6 +102,48 @@ class Database:
             code text
         );"""
         await conn.execute(query=query)
+
+    async def admins_attention(self, conn):
+        query = """CREATE TABLE IF NOT EXISTS attentions(
+            user_id char(15),
+            message text
+        )"""
+        await conn.execute(query=query)
+
+    async def get_all_user_list(self):
+        query = "SELECT user_id FROM students"
+        conn = await self._get_connection()
+        result = await conn.fetch(query)
+
+        user_ids = [row['user_id'] for row in result]
+        await conn.close()
+
+        return user_ids
+
+    
+    async def create_attention(self, user_id, attention) -> bool:
+        query = ("INSERT INTO attentions (user_id, message)"
+                 f" VALUES ('{user_id}', '{attention}' );")
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
+
+    async def get_last_attention(self) -> str:
+        query = f"SELECT message FROM attentions ORDER BY message DESC LIMIT 1"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        response = await conn.fetch(query)
+        result_string = ''
+        for item in response:
+            result_string += item['message'] + '\n'
+        return result_string
+    
+    async def delete_old_attention(self):
+        query = "DELETE FROM attentions"
+        conn = await self._get_connection()
+        await conn.execute(query)
+        await conn.close()
+
 
     async def init_admin(self, code, admin_id) -> bool:
         query = f"UPDATE teachers SET user_id = '{admin_id}' WHERE code = '{code}'"
@@ -143,6 +188,7 @@ class Database:
         await self._firt_init_teacher(conn)
         await self._first_init_admin(conn)
         await self.create_tables(conn)
+        await self.admins_attention(conn)
         await conn.close()
     
     async def create_tables(self, conn):

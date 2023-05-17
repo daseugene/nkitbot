@@ -20,6 +20,11 @@ class AdminStates(StatesGroup):
     choosing_user_for_delete = State()
     ready_to_work_admin = State()
     waiting_for_file = State()
+
+    ready_to_create_attention = State()
+
+    before_sending_attention = State()
+
     
 
 class StudentStates(StatesGroup):

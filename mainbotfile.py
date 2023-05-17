@@ -43,30 +43,15 @@ async def student_authorized(query: types.CallbackQuery):
 async def student_choosing_group(message: types.Message):
     await message.delete()
     print(message.text, message.from_user.id)
-  #
     await StudentService.init_student(message.text, message.from_user.id)
-    await message.answer("Теперь нам известно, что ты студент группы " + message.text)
     await StudentStates.stud_ready_to_study.set()
-    await message.answer("Чтобы продолжить работу в системе, отправьте любое сообщение в чат.")
-   # await get_schedule(group)
-    
+    await message.answer("Теперь мы узнали из какой ты группы. Чтобы продолжить работу в системе, отправьте любое сообщение в чат.")
 
 
 
 @dp.message_handler(state=StudentStates.stud_ready_to_study)
 async def stud_wyd(message: types.Message):
     await message.answer("Что будем делать?", reply_markup=keyboard.student_buttons)
-
-@dp.callback_query_handler(state=StudentStates.stud_ready_to_study, text='students_schedule')
-async def stud_schedule(query: types.CallbackQuery):
-    await query.message.answer("Обрабатываем Ваш запрос...")
-    await StudentStates.awaiting_schedule.set()
-
-@dp.message_handler(state=StudentStates.awaiting_schedule)
-async def get_schedule(message: types.Message):
-    await StudentService.student_schedule(message.from_user.id)
-
-    await StudentStates.stud_ready_to_study.set()
 
 @dp.callback_query_handler(text='student_schedule')
 async def get_sche(query: types.CallbackQuery):
@@ -77,59 +62,51 @@ async def get_sche(query: types.CallbackQuery):
 
 @dp.message_handler(state=StudentStates.get_sch_state)
 async def get_schedule(message: types.Message):
-
     reply = await StudentService.get_schedule(message.text)
     await message.reply(reply)
-    # success = await StudentService.get_schedule(message.text)
-    # if success:
-        # await message.reply(
-            # "Best",
-           # reply_markup=keyboard.student_buttons
-        # )
-        # await StudentStates.stud_ready_to_study.set()     
-    # else:
-        # await message.reply(reply)
+    await StudentStates.stud_ready_to_study.set()
+    await message.reply("Что будем делать?", reply_markup=keyboard.student_buttons)
 
 
 ###----- TEACHER -------
 
-@dp.callback_query_handler(text='teacher')
-async def teacher_authorized(query: types.CallbackQuery):
-    await query.message.reply(
-        "Была выбрана роль ПРЕПОДАВАТЕЛЬ. Введите ключ авторизации!"    
-    )
-    await TeacherStates.awaiting_key.set()
+# @dp.callback_query_handler(text='teacher')
+# async def teacher_authorized(query: types.CallbackQuery):
+#     await query.message.reply(
+#         "Была выбрана роль ПРЕПОДАВАТЕЛЬ. Введите ключ авторизации!"    
+#     )
+#     await TeacherStates.awaiting_key.set()
 
 
-@dp.message_handler(state=TeacherStates.awaiting_key)
-async def teacher_authorized(message: types.Message):
-    success = await TeacherService.check_code(
-                                          message.text, )
-    if not success:
-        await message.reply(
-            "Код недействителен"
-        )
-    else:
-        await message.answer(
-                "Добро пожаловать, " + message.from_user.full_name +
-                " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте код повторно.",
-                await TeacherStates.ready_to_work.set())      
-        await TeacherService.init_teacher(
-                                message.from_user.id, message.text)
+# @dp.message_handler(state=TeacherStates.awaiting_key)
+# async def teacher_authorized(message: types.Message):
+#     success = await TeacherService.check_code(
+#                                           message.text, )
+#     if not success:
+#         await message.reply(
+#             "Код недействителен"
+#         )
+#     else:
+#         await message.answer(
+#                 "Добро пожаловать, " + message.from_user.full_name +
+#                 " Если Вы согласны продолжать работу в системе НКИТ-БОТ, отправьте код повторно.",
+#                 await TeacherStates.ready_to_work.set())      
+#         await TeacherService.init_teacher(
+#                                 message.from_user.id, message.text)
                                              
     
 
-@dp.message_handler(state=TeacherStates.ready_to_work)
-async def t_wyd(message: types.Message):
-    await TeacherService.finish_auth(
-                                message.from_user.id)
-    await message.answer(
-        "Что будем делать?",
-        reply_markup=keyboard.teacher_buttons
+# @dp.message_handler(state=TeacherStates.ready_to_work)
+# async def t_wyd(message: types.Message):
+#     await TeacherService.finish_auth(
+#                                 message.from_user.id)
+#     await message.answer(
+#         "Что будем делать?",
+#         reply_markup=keyboard.teacher_buttons
         
         
-    )
-    # await TeacherStates.ready_to_work.set()
+#     )
+#     # await TeacherStates.ready_to_work.set()
 
 
 
@@ -163,9 +140,38 @@ SAVE_DIR = "pdf/files/"
 @dp.callback_query_handler(text='upload_new_rasp')
 async def transition_to_uploading(query: types.CallbackQuery):
     await AdminStates.waiting_for_file.set()
-    await query.message.reply("Отправьте любое сообщение в чат.")
+    await query.message.reply("Отправьте документ с расписанием в чат.")
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@dp.callback_query_handler(text='attention')
+async def ready_for_attention(query: types.CallbackQuery):
+    await query.message.reply(
+        "Введите ваше объявление"
+    )
+    await AdminStates.ready_to_create_attention.set()
+
+@dp.message_handler(state=AdminStates.ready_to_create_attention)
+async def create_attention(message: types.Message):
+    await AdminService.delete_old_attention()
+    await AdminService.create_attention(message.from_user.id, message.text)
+    await message.reply(
+            "Сообщение было создано, кому его отправим?", reply_markup=keyboard.admin_attention_buttons 
+        )   
+
+@dp.callback_query_handler(text='all_users')
+async def send_attention_to_all(query: types.CallbackQuery):
+    list = await AdminService.send_attention_to_all()
+    print(list)
+    message_to_users = await AdminService.get_last_attention()
+
+    pre_attention = "ОБЪЯВЛЕНИЕ ОТ АДМИНИСТРАЦИИ: "
+    attention = pre_attention + message_to_users
+    for user_id in list:
+        message = types.Message(text=attention, chat=user_id)
+        await bot.send_message(chat_id=user_id, text=attention)
 
 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 @dp.message_handler(content_types=ContentType.DOCUMENT, state=AdminStates.waiting_for_file)
 async def handle_pdf(message: types.Message):
@@ -206,14 +212,6 @@ async def send_pdf_content(message: types.Message):
 
 ### ----- SYSTEM AND HELP BUTTONS ----
 
-
-@dp.message_handler(commands=['about'])
-async def process_about_command(message: types.Message):
-    # РЕДАКТИРОВАТЬ
-    await message.answer(
-        ("Этот бот упростит твою учёбу."
-         "Следить за обновлениями можно по ссылке: "),
-        reply_markup=keyboard.help_buttons)
 
 if __name__ == '__main__':
     print('Starting bot...')
